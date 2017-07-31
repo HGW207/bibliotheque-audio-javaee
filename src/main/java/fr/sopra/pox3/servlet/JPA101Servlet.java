@@ -28,12 +28,12 @@ public class JPA101Servlet extends HttpServlet
 
 		Auteur auteur = new Auteur();
 		auteur.setNom( "Toto" );
-		auteurDAO.ajouterAuteur( auteur );
+		auteurDAO.add( auteur );
 
 		auteur = auteurDAO.findById( 1 );
 
 		auteur.setNom( "Il est " + new Date() );
-		auteurDAO.updateAuteur( auteur );
+		auteurDAO.update( auteur );
 
 		List<Auteur> auteurs = auteurDAO.findAll();
 		for( Auteur a : auteurs )

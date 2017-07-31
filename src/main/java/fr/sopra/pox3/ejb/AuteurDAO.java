@@ -26,18 +26,22 @@ public class AuteurDAO
 		return query.getResultList();
 	}
 
-	public void ajouterAuteur( Auteur auteur )
+	public void add( Auteur auteur )
 	{
 		em.persist( auteur );
 	}
 
-	public void updateAuteur( Auteur auteur )
+	public void update( Auteur auteur )
 	{
 		em.merge( auteur );
 	}
 
-	public void deleteAuteur( Auteur auteur )
+	public void deleteById( int id )
 	{
+		Auteur auteur = findById(id);
+		if (auteur !=null)
 		em.remove( auteur );
 	}
+	
+	
 }

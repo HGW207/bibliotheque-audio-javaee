@@ -14,6 +14,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import fr.sopra.pox3.dto.AuteurDTO;
 import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
 import fr.sopra.pox3.ejb.MaisonDeDisqueDAO;
 import fr.sopra.pox3.entities.MaisonDeDisque;
@@ -88,6 +89,15 @@ public class MaisonDeDisqueWebService
 		maisonDeDisqueDAO.deleteById( id );
 	}
 
+
+	
+	@POST
+	@Path("{id}/addAuteur")
+	public MaisonDeDisqueDTO addAuteur(@PathParam("id") int id,AuteurDTO auteurDTO){
+		MaisonDeDisque maison = maisonDeDisqueDAO.findById(id);
+		return null;
+	}
+	
 	private MaisonDeDisqueDTO dtoFromEntity( MaisonDeDisque maison )
 	{
 		if( maison == null )
