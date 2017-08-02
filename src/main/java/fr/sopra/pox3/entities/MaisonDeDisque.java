@@ -21,8 +21,11 @@ public class MaisonDeDisque
 	@GeneratedValue( strategy = GenerationType.IDENTITY )
 	private int id;
 
-	@OneToMany( mappedBy = "maison" )
+	@OneToMany
 	private List<Auteur> auteurs = new ArrayList<>();
+	
+	@OneToMany
+	private List<Disque> disques = new ArrayList<>();
 
 	private String nom;
 
@@ -56,6 +59,16 @@ public class MaisonDeDisque
 	public void addAuteur( Auteur auteur )
 	{
 		auteurs.add( auteur );
+	}
+	
+	public List<Disque> getDisques()
+	{
+		return disques;
+	}
+
+	public void addDisque( Disque disque )
+	{
+		disques.add( disque );
 	}
 	
 }

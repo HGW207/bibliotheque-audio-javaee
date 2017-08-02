@@ -19,7 +19,15 @@ public class AuteurDAO {
 	private EntityManager em;
 	
 	public Auteur findById(int id) {
-		return em.find(Auteur.class, id);
+		TypedQuery<Auteur> q = em.createQuery( "from Auteur a left join fetch a.disques where a.id=:id",
+				Auteur.class );
+		q.setParameter( "id", id );
+		try {
+			return q.getSingleResult();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public List<Auteur> findAll() {
