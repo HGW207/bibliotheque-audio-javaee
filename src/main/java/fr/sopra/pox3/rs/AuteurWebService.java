@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import fr.sopra.pox3.dto.AuteurDTO;
 import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
 import fr.sopra.pox3.ejb.AuteurDAO;
+import fr.sopra.pox3.ejb.InteractionMaisonAuteurDAO;
 import fr.sopra.pox3.ejb.MaisonDeDisqueDAO;
 import fr.sopra.pox3.entities.Auteur;
 import fr.sopra.pox3.entities.MaisonDeDisque;
@@ -31,6 +32,8 @@ public class AuteurWebService {
 
 	@EJB
 	private MaisonDeDisqueDAO maisonDAO;
+	@EJB
+	InteractionMaisonAuteurDAO interactionDAO;
 
 	@GET
 	@Path("/{id}")
@@ -105,7 +108,7 @@ public class AuteurWebService {
 			maisonDAO.add(maison);
 		}
 		
-		auteur = auteurDAO.updateMaison(auteur, maison);
+		auteur = interactionDAO.updateMaison(auteur, maison);
 		return entityToDTO(auteur,true);
 	}
 

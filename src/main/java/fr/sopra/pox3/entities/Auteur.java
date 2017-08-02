@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne;
 import fr.sopra.pox3.dto.AuteurDTO;
 import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
 
-@Entity( name = "auteurs" )
+@Entity
 public class Auteur
 {
 	@Id
@@ -49,6 +49,11 @@ public class Auteur
 	public void setMaison( MaisonDeDisque maison )
 	{
 		this.maison = maison;
+	}
+
+	public void removeMaison() {
+		this.maison = null;
+		
 	}
 	
 	

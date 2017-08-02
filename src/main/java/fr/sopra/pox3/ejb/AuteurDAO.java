@@ -13,12 +13,11 @@ import fr.sopra.pox3.entities.MaisonDeDisque;
 
 @Stateless
 public class AuteurDAO {
-	@EJB
-	MaisonDeDisqueDAO maisonDAO;
+	
 
 	@PersistenceContext(name = "Bibliotheque")
 	private EntityManager em;
-
+	
 	public Auteur findById(int id) {
 		return em.find(Auteur.class, id);
 	}
@@ -42,10 +41,5 @@ public class AuteurDAO {
 			em.remove(auteur);
 	}
 
-	public Auteur updateMaison(Auteur auteur, MaisonDeDisque maison) {
-		
-		auteur.setMaison(maison);
-		update(auteur);
-		return auteur;
-	}
+	
 }

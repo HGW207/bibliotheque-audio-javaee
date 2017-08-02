@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -16,13 +17,20 @@ public class MaisonDeDisqueDAO
 	@PersistenceContext( name = "Bibliotheque" )
 	private EntityManager em;
 	
-
+	@EJB
+	InteractionMaisonAuteurDAO interactionDAO;
+	
 	public MaisonDeDisque findById( int id )
 	{
 		TypedQuery<MaisonDeDisque> q = em.createQuery( "from MaisonDeDisque m left join fetch m.auteurs where m.id=:id",
 				MaisonDeDisque.class );
 		q.setParameter( "id", id );
-		return q.getSingleResult();
+		try {
+			return q.getSingleResult();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public List<MaisonDeDisque> findAll()
@@ -43,7 +51,9 @@ public class MaisonDeDisqueDAO
 	public void deleteById( int id )
 	{
 		MaisonDeDisque maison = em.find( MaisonDeDisque.class, id );
-		if( maison != null )
+		if( maison != null ){
+			interactionDAO.removeMaisonFromAllAuteurs(maison);
 			em.remove( maison );
+		}
 	}
 }

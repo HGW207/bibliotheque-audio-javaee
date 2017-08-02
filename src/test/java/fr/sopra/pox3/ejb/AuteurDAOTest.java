@@ -24,16 +24,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import fr.sopra.pox3.entities.MaisonDeDisque;
+import fr.sopra.pox3.entities.Auteur;
 
 @RunWith(Arquillian.class)
-public class MaisonDeDisqueDAOTest {
+public class AuteurDAOTest {
 	@Deployment
 	public static Archive<?> createDeployment() {
 		// TODO Ajouter la data source pour les tests et l'utiliser à la place
 		// de ExempleDS dans le fichier persistence.xml
-		return ShrinkWrap.create(WebArchive.class, "test.war").addPackage(MaisonDeDisque.class.getPackage())
-				.addPackage(MaisonDeDisqueDAO.class.getPackage())
+		return ShrinkWrap.create(WebArchive.class, "test.war")
+				.addPackage(Auteur.class.getPackage())
+				.addPackage(AuteurDAO.class.getPackage())
 				.addAsResource("test-persistence.xml", "META-INF/persistence.xml")
 				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
@@ -45,13 +46,13 @@ public class MaisonDeDisqueDAOTest {
 	UserTransaction utx;
 
 	@EJB
-	MaisonDeDisqueDAO maisonDAO;
+	AuteurDAO auteurDAO;
 
 	@Before
 	public void preparePersistenceTest() throws Exception {
 		startTransaction();
 		System.out.println("Deleting old records");
-		em.createQuery("delete from MaisonDeDisque").executeUpdate();
+		em.createQuery("delete from Auteur").executeUpdate();
 		utx.commit();
 
 		em.clear();
@@ -67,67 +68,67 @@ public class MaisonDeDisqueDAOTest {
 	@Test
 	public void shouldFindAllGamesUsingJpqlQuery() throws Exception {
 		System.out.println("Inserting record");
-		MaisonDeDisque maison = new MaisonDeDisque();
-		maison.setNom("TotoRecords");
-		em.persist(maison);
+		Auteur auteur = new Auteur();
+		auteur.setNom("TotoRecords");
+		em.persist(auteur);
 
 		System.out.println("Selecting (using JPQL)...");
-		List<MaisonDeDisque> maisons = em.createQuery("from MaisonDeDisque m", MaisonDeDisque.class).getResultList();
+		List<Auteur> auteurs = em.createQuery("from Auteur m", Auteur.class).getResultList();
 
-		System.out.println("Found " + maisons.size() + " maisons");
-		assertEquals(1, maisons.size());
-		assertEquals("TotoRecords", maisons.get(0).getNom());
+		System.out.println("Found " + auteurs.size() + " auteurs");
+		assertEquals(1, auteurs.size());
+		assertEquals("TotoRecords", auteurs.get(0).getNom());
 	}
 
 	@Test
 	public void findAllTest() {
-		assertEquals(0, maisonDAO.findAll().size());
+		assertEquals(0, auteurDAO.findAll().size());
 		fillDB(2);
-		assertEquals(2, maisonDAO.findAll().size());
+		assertEquals(2, auteurDAO.findAll().size());
 	}
 	
 	@Test
 	public void findByIdTest() {
-		assertTrue(maisonDAO.findById(1)==null);
+		assertTrue(auteurDAO.findById(1)==null);
 		fillDB(2);
-		List<MaisonDeDisque> maisons = maisonDAO.findAll();
-		MaisonDeDisque maison = maisons.get(0);
-		assertFalse(maisonDAO.findById(maison.getId())==null);
-		assertEquals(maison.getNom(), maisonDAO.findById(maison.getId()).getNom());
+		List<Auteur> auteurs = auteurDAO.findAll();
+		Auteur auteur = auteurs.get(0);
+		assertFalse(auteurDAO.findById(auteur.getId())==null);
+		assertEquals(auteur.getNom(), auteurDAO.findById(auteur.getId()).getNom());
 	}
 	
 	@Test
 	public void addTest(){
 		fillDB(2);
-		assertEquals(2, maisonDAO.findAll().size());
-		MaisonDeDisque maison = new MaisonDeDisque();
-		maison.setNom("MaisonAddTest");
-		assertTrue(maison.getId()<=0);
-		maisonDAO.add(maison);
-		assertTrue(maison.getId()>0);
-		assertEquals(3, maisonDAO.findAll().size());
+		assertEquals(2, auteurDAO.findAll().size());
+		Auteur auteur = new Auteur();
+		auteur.setNom("AuteurAddTest");
+		assertTrue(auteur.getId()<=0);
+		auteurDAO.add(auteur);
+		assertTrue(auteur.getId()>0);
+		assertEquals(3, auteurDAO.findAll().size());
 	}
 	
 	//
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void addTestFailure(){
-		MaisonDeDisque maison = new MaisonDeDisque();
-		maison.setNom("MaisonAddTest");
-		maisonDAO.add(maison);
+		Auteur auteur = new Auteur();
+		auteur.setNom("MaisonAddTest");
+		auteurDAO.add(auteur);
 		
 		//Expected failure when adding mains with the same Id
-		MaisonDeDisque maison2 = new MaisonDeDisque();
-		maison2.setId(maison.getId());
-		maison2.setNom("plop");
+		Auteur auteur2 = new Auteur();
+		auteur2.setId(auteur.getId());
+		auteur2.setNom("plop");
 		
-		maisonDAO.add(maison2);
+		auteurDAO.add(auteur2);
 	}
 
 	private void fillDB(int n) {
 		for (int i = 0; i < n; i++) {
-			MaisonDeDisque maison = new MaisonDeDisque();
-			maison.setNom("MaisonAutofill" + 1);
-			em.persist(maison);
+			Auteur auteur = new Auteur();
+			auteur.setNom("AuteurAutofill" + 1);
+			em.persist(auteur);
 		}
 	}
 
