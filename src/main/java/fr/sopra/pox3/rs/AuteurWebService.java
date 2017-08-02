@@ -22,10 +22,15 @@ import fr.sopra.pox3.entities.Auteur;
 import fr.sopra.pox3.entities.MaisonDeDisque;
 
 @Path("/auteurs")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class AuteurWebService {
 
 	@EJB
 	private AuteurDAO auteurDAO;
+
+	@EJB
+	private MaisonDeDisqueDAO maisonDAO;
 
 	@GET
 	@Path("/{id}")
@@ -35,7 +40,9 @@ public class AuteurWebService {
 		if (auteur == null)
 			return null;
 
-		return dtoFromEntity(auteur);
+		AuteurDTO dto = entityToDTO(auteur,true);
+
+		return dto;
 	}
 
 	@GET
@@ -48,7 +55,7 @@ public class AuteurWebService {
 		List<AuteurDTO> dtos = new ArrayList<>();
 
 		for (Auteur auteur : auteurs)
-			dtos.add(dtoFromEntity(auteur));
+			dtos.add(entityToDTO(auteur));
 
 		return dtos;
 	}
@@ -83,18 +90,41 @@ public class AuteurWebService {
 	@DELETE
 	@Path("/{id}")
 	public void delete(@PathParam("id") int id) {
-			auteurDAO.deleteById(id);
+		auteurDAO.deleteById(id);
 	}
 
-	private AuteurDTO dtoFromEntity(Auteur auteur) {
-		if (auteur == null)
-			return null;
-
-		AuteurDTO dto = new AuteurDTO();
-
-		dto.setId(auteur.getId());
-		dto.setNom(auteur.getNom());
-
-		return dto;
+	@POST
+	@Path("{id}/addMaison")
+	public AuteurDTO addMaison(@PathParam("id") int id, MaisonDeDisqueDTO maisonDTO) {
+		Auteur auteur = auteurDAO.findById(id);
+		MaisonDeDisque maison = maisonDAO.findById(maisonDTO.getId());
+		if (auteur==null)
+			throw new RuntimeException("Auteur " + id + " not found");
+		
+		if (maison==null){
+			maisonDAO.add(maison);
+		}
+		
+		auteur = auteurDAO.updateMaison(auteur, maison);
+		return entityToDTO(auteur,true);
 	}
+
+	public AuteurDTO entityToDTO(Auteur auteur, boolean getAllAttributes) {
+		AuteurDTO auteurDTO = new AuteurDTO();
+		auteurDTO.setId(auteur.getId());
+		auteurDTO.setNom(auteur.getNom());
+		if (getAllAttributes) {
+			if (auteur.getMaison() != null) {
+				MaisonDeDisqueDTO maisonDTO = new MaisonDeDisqueWebService().entityToDTO(auteur.getMaison());
+				auteurDTO.setMaisonDTO(maisonDTO);
+			}
+		}
+		return auteurDTO;
+	}
+	
+	public AuteurDTO entityToDTO(Auteur auteur) {
+		return entityToDTO(auteur,false);
+	}
+	
+
 }

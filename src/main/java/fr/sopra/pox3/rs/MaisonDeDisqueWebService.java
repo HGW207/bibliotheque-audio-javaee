@@ -16,14 +16,21 @@ import javax.ws.rs.core.MediaType;
 
 import fr.sopra.pox3.dto.AuteurDTO;
 import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
+import fr.sopra.pox3.ejb.AuteurDAO;
 import fr.sopra.pox3.ejb.MaisonDeDisqueDAO;
+import fr.sopra.pox3.entities.Auteur;
 import fr.sopra.pox3.entities.MaisonDeDisque;
 
 @Path( "/maisons" )
+@Consumes( MediaType.APPLICATION_JSON )
+@Produces( MediaType.APPLICATION_JSON )
 public class MaisonDeDisqueWebService
 {
 	@EJB
 	private MaisonDeDisqueDAO maisonDeDisqueDAO;
+	
+	@EJB
+	private AuteurDAO auteurDAO;
 
 	@GET
 	@Path( "/{id}" )
@@ -33,8 +40,10 @@ public class MaisonDeDisqueWebService
 		MaisonDeDisque maison = maisonDeDisqueDAO.findById( id );
 		if( maison == null )
 			return null;
-
-		return dtoFromEntity( maison );
+		
+		MaisonDeDisqueDTO dto = entityToDTO(maison,true);
+		
+		return dto;
 	}
 
 	@GET
@@ -48,7 +57,7 @@ public class MaisonDeDisqueWebService
 		List<MaisonDeDisqueDTO> dtos = new ArrayList<>();
 
 		for( MaisonDeDisque maison : maisons )
-			dtos.add( dtoFromEntity( maison ) );
+			dtos.add( entityToDTO(maison) );
 
 		return dtos;
 	}
@@ -95,19 +104,38 @@ public class MaisonDeDisqueWebService
 	@Path("{id}/addAuteur")
 	public MaisonDeDisqueDTO addAuteur(@PathParam("id") int id,AuteurDTO auteurDTO){
 		MaisonDeDisque maison = maisonDeDisqueDAO.findById(id);
-		return null;
+		
+		Auteur auteur = auteurDAO.findById(auteurDTO.getId());
+		if(auteur==null){
+			auteur = new Auteur();
+			auteur.setNom(auteurDTO.getNom());
+			auteurDAO.add(auteur);
+		}
+		
+		
+		maison.addAuteur(auteur);
+		return entityToDTO(maison,true);
 	}
 	
-	private MaisonDeDisqueDTO dtoFromEntity( MaisonDeDisque maison )
-	{
-		if( maison == null )
-			return null;
-
-		MaisonDeDisqueDTO dto = new MaisonDeDisqueDTO();
-
-		dto.setId( maison.getId() );
-		dto.setNom( maison.getNom() );
-
-		return dto;
+	public MaisonDeDisqueDTO entityToDTO(MaisonDeDisque maison,boolean getAllAttributes){
+		MaisonDeDisqueDTO maisonDTO = new MaisonDeDisqueDTO();
+		maisonDTO.setId(maison.getId());
+		maisonDTO.setNom(maison.getNom());
+		if (getAllAttributes){
+			if (maison.getAuteurs()!=null){
+				List<AuteurDTO> auteursDTO = new ArrayList<>();
+				AuteurWebService ws = new AuteurWebService();
+				for(Auteur auteur : maison.getAuteurs()){
+					auteursDTO.add(ws.entityToDTO(auteur));
+				}
+				maisonDTO.setAuteurs(auteursDTO);
+			}
+		}
+		return maisonDTO;
 	}
+
+	public MaisonDeDisqueDTO entityToDTO(MaisonDeDisque maison){
+		return entityToDTO(maison, false);
+	}
+		
 }

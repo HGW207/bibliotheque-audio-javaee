@@ -6,6 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import fr.sopra.pox3.dto.AuteurDTO;
+import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
+
 @Entity( name = "auteurs" )
 public class Auteur
 {
@@ -47,4 +50,6 @@ public class Auteur
 	{
 		this.maison = maison;
 	}
+	
+	
 }

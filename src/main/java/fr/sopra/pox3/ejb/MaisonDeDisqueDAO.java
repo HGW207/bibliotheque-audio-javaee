@@ -2,6 +2,7 @@ package fr.sopra.pox3.ejb;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,6 +15,7 @@ public class MaisonDeDisqueDAO
 {
 	@PersistenceContext( name = "Bibliotheque" )
 	private EntityManager em;
+	
 
 	public MaisonDeDisque findById( int id )
 	{

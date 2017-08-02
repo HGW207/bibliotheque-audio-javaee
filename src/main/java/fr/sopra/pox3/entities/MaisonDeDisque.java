@@ -3,11 +3,16 @@ package fr.sopra.pox3.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import fr.sopra.pox3.dto.AuteurDTO;
+import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
+import fr.sopra.pox3.ejb.AuteurDAO;
 
 @Entity
 public class MaisonDeDisque
@@ -21,6 +26,8 @@ public class MaisonDeDisque
 
 	private String nom;
 
+
+	
 	public int getId()
 	{
 		return id;
@@ -50,4 +57,5 @@ public class MaisonDeDisque
 	{
 		auteurs.add( auteur );
 	}
+	
 }

@@ -1,34 +1,86 @@
 package fr.sopra.pox3.ejb;
 
-import static org.junit.Assert.*;
+import java.util.List;
 
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class MaisonDeDisqueDAOTest {
+import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
+import fr.sopra.pox3.entities.MaisonDeDisque;
 
-	@Test
-	public void testFindById() {
-		fail("Not yet implemented");
+
+@RunWith( Arquillian.class )
+public class MaisonDeDisqueDAOTest
+{
+	@Deployment
+	public static Archive<?> createDeployment()
+	{
+		// TODO Ajouter la data source pour les tests et l'utiliser à la place de ExempleDS dans le fichier persistence.xml
+		return ShrinkWrap.create( WebArchive.class, "test.war" )
+				.addPackage( MaisonDeDisque.class.getPackage() )
+				.addPackage( MaisonDeDisqueDTO.class.getPackage() )
+				.addAsResource( "test-persistence.xml", "META-INF/persistence.xml" )
+				.addAsWebInfResource( EmptyAsset.INSTANCE, "beans.xml" );
+	}
+
+	@PersistenceContext
+	EntityManager em;
+
+	@Inject
+	UserTransaction utx;
+
+	@Before
+	public void preparePersistenceTest() throws Exception
+	{
+		startTransaction();
+		System.out.println( "Deleting old records" );
+		em.createQuery( "delete from MaisonDeDisque" ).executeUpdate();
+		utx.commit();
+
+		em.clear();
+
+		startTransaction();
+	}
+
+	@After
+	public void commitTransaction() throws Exception
+	{
+		utx.commit();
 	}
 
 	@Test
-	public void testFindAll() {
-		fail("Not yet implemented");
+	public void shouldFindAllGamesUsingJpqlQuery() throws Exception
+	{
+		System.out.println( "Inserting record" );
+		MaisonDeDisque maison = new MaisonDeDisque();
+		maison.setNom( "TotoRecords" );
+		em.persist( maison );
+
+		System.out.println( "Selecting (using JPQL)..." );
+		List<MaisonDeDisque> maisons = em.createQuery( "from MaisonDeDisque m", MaisonDeDisque.class ).getResultList();
+
+		System.out.println( "Found " + maisons.size() + " maisons" );
+		Assert.assertEquals( 1, maisons.size() );
+		Assert.assertEquals( "TotoRecords", maisons.get( 0 ).getNom() );
 	}
 
-	@Test
-	public void testAdd() {
-		fail("Not yet implemented");
+	private void startTransaction() throws Exception
+	{
+		utx.begin();
+		em.joinTransaction();
 	}
-
-	@Test
-	public void testUpdate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testDeleteById() {
-		fail("Not yet implemented");
-	}
-
 }
