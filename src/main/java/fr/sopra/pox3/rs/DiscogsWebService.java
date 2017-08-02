@@ -10,5 +10,5 @@ public interface DiscogsWebService {
 	@Path("/database/search")
 	@GET
 	@Produces("application/json")
-	public void searchArtist(@QueryParam("q") String dunno,@QueryParam("type") String MUSTBEARTIST /*,...*/);
+	public DiscogsSearchArtistResponse searchArtist(@QueryParam("q") String dunno,@QueryParam("type") String MUSTBEARTIST /*,...*/);
 }

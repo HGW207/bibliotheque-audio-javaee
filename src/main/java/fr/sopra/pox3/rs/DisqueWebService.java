@@ -14,47 +14,45 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import fr.sopra.pox3.dto.AuteurDTO;
+import fr.sopra.pox3.dto.DisqueDTO;
 import fr.sopra.pox3.dto.MaisonDeDisqueDTO;
-import fr.sopra.pox3.ejb.AuteurDAO;
-import fr.sopra.pox3.ejb.InteractionMaisonAuteurDAO;
-import fr.sopra.pox3.ejb.MaisonDeDisqueDAO;
-import fr.sopra.pox3.entities.Auteur;
+import fr.sopra.pox3.ejb.DisqueDAO;
+import fr.sopra.pox3.entities.Disque;
 import fr.sopra.pox3.entities.MaisonDeDisque;
 
-@Path("/auteurs")
+@Path("/disques")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class DisqueWebService {
 
 	@EJB 
-	DisqueDAO disqueDAO = 
+	DisqueDAO disqueDAO ;
 
 
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public AuteurDTO findById(@PathParam("id") int id) {
-		Auteur auteur = auteurDAO.findById(id);
-		if (auteur == null)
+	public DisqueDTO findById(@PathParam("id") int id) {
+		Disque disque = disqueDAO.findById(id);
+		if (disque == null)
 			return null;
 
-		AuteurDTO dto = entityToDTO(auteur,true);
+		DisqueDTO dto = entityToDTO(disque);
 
 		return dto;
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<AuteurDTO> findAll() {
-		List<Auteur> auteurs = auteurDAO.findAll();
-		if (auteurs == null)
+	public List<DisqueDTO> findAll() {
+		List<Disque> disques = disqueDAO.findAll();
+		if (disques == null)
 			return null;
 
-		List<AuteurDTO> dtos = new ArrayList<>();
+		List<DisqueDTO> dtos = new ArrayList<>();
 
-		for (Auteur auteur : auteurs)
-			dtos.add(entityToDTO(auteur));
+		for (Disque disque : disques)
+			dtos.add(entityToDTO(disque));
 
 		return dtos;
 	}
@@ -62,66 +60,58 @@ public class DisqueWebService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public AuteurDTO create(AuteurDTO auteur) {
-		Auteur auteurEntity = new Auteur();
-		auteurEntity.setNom(auteur.getNom());
+	public DisqueDTO create(DisqueDTO disque) {
+		Disque disqueEntity = new Disque();
+		disqueEntity.setNom(disque.getNom());
 
-		auteurDAO.add(auteurEntity);
+		disqueDAO.add(disqueEntity);
 
-		auteur.setId(auteurEntity.getId());
+		disque.setId(disqueEntity.getId());
 
-		return auteur;
+		return disque;
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public AuteurDTO update(AuteurDTO auteur) {
-		Auteur auteurEntity = new Auteur();
-		auteurEntity.setId(auteur.getId());
-		auteurEntity.setNom(auteur.getNom());
+	public DisqueDTO update(DisqueDTO disque) {
+		Disque disqueEntity = new Disque();
+		disqueEntity.setId(disque.getId());
+		disqueEntity.setNom(disque.getNom());
 
-		auteurDAO.update(auteurEntity);
+		disqueDAO.update(disqueEntity);
 
-		return auteur;
+		return disque;
 	}
 
 	@DELETE
 	@Path("/{id}")
 	public void delete(@PathParam("id") int id) {
-		auteurDAO.deleteById(id);
+		disqueDAO.deleteById(id);
 	}
 
-	@POST
-	@Path("{id}/addMaison")
-	public AuteurDTO addMaison(@PathParam("id") int id, MaisonDeDisqueDTO maisonDTO) {
-		Auteur auteur = auteurDAO.findById(id);
-		MaisonDeDisque maison = maisonDAO.findById(maisonDTO.getId());
-		if (auteur==null)
-			throw new RuntimeException("Auteur " + id + " not found");
-		
-		if (maison==null){
-			maisonDAO.add(maison);
-		}
-		
-		auteur = interactionDAO.updateMaison(auteur, maison);
-		return entityToDTO(auteur,true);
-	}
+//	@POST
+//	@Path("{id}/addMaison")
+//	public DisqueDTO addMaison(@PathParam("id") int id, MaisonDeDisqueDTO maisonDTO) {
+//		Disque disque = disqueDAO.findById(id);
+//		MaisonDeDisque maison = maisonDAO.findById(maisonDTO.getId());
+//		if (disque==null)
+//			throw new RuntimeException("Disque " + id + " not found");
+//		
+//		if (maison==null){
+//			maisonDAO.add(maison);
+//		}
+//		
+//		disque = interactionDAO.updateMaison(disque, maison);
+//		return entityToDTO(disque,true);
+//	}
 
-	public AuteurDTO entityToDTO(Auteur auteur, boolean getAllAttributes) {
-		AuteurDTO auteurDTO = new AuteurDTO();
-		auteurDTO.setId(auteur.getId());
-		auteurDTO.setNom(auteur.getNom());
-		if (getAllAttributes) {
-			if (auteur.getMaison() != null) {
-				MaisonDeDisqueDTO maisonDTO = new MaisonDeDisqueWebService().entityToDTO(auteur.getMaison());
-				auteurDTO.setMaisonDTO(maisonDTO);
-			}
-		}
-		return auteurDTO;
+	public DisqueDTO entityToDTO(Disque disque) {
+		DisqueDTO disqueDTO = new DisqueDTO();
+		disqueDTO.setId(disque.getId());
+		disqueDTO.setNom(disque.getNom());
+
+		return disqueDTO;
 	}
 	
-	public AuteurDTO entityToDTO(Auteur auteur) {
-		return entityToDTO(auteur,false);
-	}
 }
