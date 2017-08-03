@@ -35,6 +35,7 @@ public class AuteurWebService {
 	@EJB
 	InteractionMaisonAuteurDAO interactionDAO;
 
+
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
